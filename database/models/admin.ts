@@ -1,12 +1,12 @@
 import { prop, getModelForClass, modelOptions, Ref } from '@typegoose/typegoose'
 
-type Permissions = {
+export type Permissions = {
     ms: string[] | "all",
     action: string[] | "all"
 }
 
 @modelOptions({options: {customName: "admins"}})
-class Admin {
+export class Admin {
     _doc: any
 
     @prop({required:true, unique:true})
