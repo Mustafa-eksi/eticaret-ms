@@ -7,15 +7,13 @@ export type Permissions = {
 
 @modelOptions({options: {customName: "admins"}})
 export class Admin {
-    _doc: any
-
     @prop({required:true, unique:true})
     public username!: string;
 
     @prop({required:true})
     public password!: string;
 
-    @prop({required:true, default: {ms:"all", action:"all"} as Permissions, type: Permissions})
+    @prop({required:true, default: {ms:"all", action:"all"} as Permissions})
     public permissions!: Permissions;
 }
 

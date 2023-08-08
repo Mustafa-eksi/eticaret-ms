@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Admin, AdminModel, Permissions } from '../database/models/admin'
 
-interface Credentials {
+export interface Credentials {
     username: string, password: string, permissions?: Permissions
 }
 
@@ -9,7 +9,9 @@ export async function checklogin(c: Credentials): Promise<boolean> {
     let u = await AdminModel.findOne({username: c.username}).catch(err=>{
         throw err;
     })
-    return await bcrypt.compare(c.password, u!.password) === true
+    if(!u) return false
+    let res: boolean = await bcrypt.compare(c.password.toString(), u!.password.toString()).catch(console.error) ?? false;
+    return res === true
 }
 
 export async function getPermissions(c: Credentials): Promise<Permissions> {
@@ -21,8 +23,9 @@ export async function getPermissions(c: Credentials): Promise<Permissions> {
 
 export async function register(cc:Credentials, new_c: Credentials) {
     if(await checklogin(cc) === false) throw new Error("Credentials are not correct!");
-
-    AdminModel.insertMany(new_c as Admin).catch(err=>{throw err});
+    let hashed = await bcrypt.hash(new_c.password, 1).catch(err => {throw err});
+    new_c.password = hashed;
+    await AdminModel.insertMany(new_c as Admin).catch(err=>{throw err});
     return true;
 }
 
